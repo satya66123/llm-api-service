@@ -1,4 +1,6 @@
+import uuid
 from fastapi import APIRouter
+from app.schemas.generate import GenerateRequest, GenerateResponse
 
 router = APIRouter(tags=["generate"])
 
@@ -15,6 +17,14 @@ def generate_info():
     }
 
 
-@router.post("/generate")
-def generate():
-    return {"message": "generate endpoint ready (implementation next task)"}
+@router.post("/generate", response_model=GenerateResponse)
+def generate(req: GenerateRequest):
+    request_id = str(uuid.uuid4())
+
+    # For now return a dummy output (LLM integration comes in next tasks)
+    return GenerateResponse(
+        request_id=request_id,
+        template_id=req.template_id,
+        cached=False,
+        output=f"Received input: {req.input[:50]}",
+    )
