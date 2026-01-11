@@ -225,8 +225,6 @@ md
 
 ![Swagger UI](docs/swagger.png)
 ![Streamlit UI](docs/ui.png)
-📌 Interview Pitch
-“I built a production-style LLM API service with prompt template management, validation, error handling, caching, OpenAI integration, and token usage tracking, along with a Streamlit UI client.”
 
 👨‍💻 Author
 Satya Srinath
