@@ -33,6 +33,10 @@ def init_state():
         st.session_state.history = []  # list of dicts
     if "api_url" not in st.session_state:
         st.session_state.api_url = "http://127.0.0.1:8000"
+    if "last_output" not in st.session_state:
+        st.session_state.last_output = ""
+    if "last_prompts" not in st.session_state:
+        st.session_state.last_prompts = {"system": "", "user": ""}
 
 init_state()
 
@@ -65,16 +69,32 @@ with st.sidebar:
     st.divider()
 
     st.subheader("🕘 History Controls")
-    if st.button("🧹 Clear History"):
-        st.session_state.history = []
-        st.success("History cleared ✅")
+    col_a, col_b = st.columns(2)
+    with col_a:
+        if st.button("🧹 Clear History"):
+            st.session_state.history = []
+            st.success("History cleared ✅")
+    with col_b:
+        if st.button("🔄 Refresh Status"):
+            st.rerun()
 
     st.caption("History stores only in browser session.")
+
+    # Export history JSON
+    st.divider()
+    st.subheader("📤 Export")
+    history_json = json.dumps(st.session_state.history, indent=2)
+    st.download_button(
+        "⬇️ Download History (JSON)",
+        data=history_json,
+        file_name="llm_api_history.json",
+        mime="application/json",
+    )
 
 # -----------------------------
 # Main Layout (two columns)
 # -----------------------------
-left, right = st.columns([1.1, 0.9], gap="large")
+left, right = st.columns([1.15, 0.85], gap="large")
 
 # -----------------------------
 # LEFT: Input Form
@@ -92,7 +112,7 @@ with left:
         height=170
     )
 
-    # Parameters - allow advanced param JSON
+    # Parameters JSON
     with st.expander("Advanced Parameters (JSON)", expanded=False):
         param_text = st.text_area(
             "parameters JSON",
@@ -106,7 +126,6 @@ with left:
             advanced_params = None
             st.error(f"Invalid JSON ❌: {e}")
 
-    # Build payload
     payload = {
         "template_id": template_id,
         "input": user_input,
@@ -133,8 +152,16 @@ with left:
         if status_code != 200:
             st.error("Request failed ❌")
             st.json(resp_data)
+
         else:
             st.success("Generated Successfully ✅")
+
+            # Save last prompts + output for copy/download
+            st.session_state.last_output = resp_data.get("output", "") or ""
+            st.session_state.last_prompts = {
+                "system": resp_data.get("system_prompt", "") or "",
+                "user": resp_data.get("user_prompt", "") or "",
+            }
 
             # Save to history
             st.session_state.history.insert(
@@ -142,7 +169,10 @@ with left:
                 {
                     "template_id": resp_data.get("template_id"),
                     "input": payload.get("input"),
+                    "parameters": payload.get("parameters"),
                     "cached": resp_data.get("cached"),
+                    "input_tokens": resp_data.get("input_tokens"),
+                    "output_tokens": resp_data.get("output_tokens"),
                     "total_tokens": resp_data.get("total_tokens"),
                     "output": resp_data.get("output"),
                     "time_ms": elapsed_ms,
@@ -151,7 +181,6 @@ with left:
                 },
             )
 
-            # Summary metrics
             col1, col2, col3, col4 = st.columns(4)
             col1.metric("Cached", str(resp_data.get("cached", False)))
             col2.metric("Input Tokens", str(resp_data.get("input_tokens", 0)))
@@ -160,6 +189,14 @@ with left:
 
             st.write("### Output")
             st.write(resp_data.get("output", ""))
+
+            # Download output as TXT
+            st.download_button(
+                "⬇️ Download Output (TXT)",
+                data=resp_data.get("output", ""),
+                file_name="llm_output.txt",
+                mime="text/plain",
+            )
 
             st.write("### Token Usage")
             st.json(
@@ -177,21 +214,43 @@ with left:
                 st.code(resp_data.get("user_prompt", ""))
 
 # -----------------------------
-# RIGHT: Response History Panel
+# RIGHT: History + Copy Actions
 # -----------------------------
 with right:
     st.subheader("📚 Response History")
+
+    # Copy prompt buttons
+    st.write("### 📋 Quick Copy")
+    copy_col1, copy_col2 = st.columns(2)
+
+    with copy_col1:
+        st.text_area("Last System Prompt", value=st.session_state.last_prompts["system"], height=110)
+        st.caption("Copy manually (CTRL+C)")
+
+    with copy_col2:
+        st.text_area("Last User Prompt", value=st.session_state.last_prompts["user"], height=110)
+        st.caption("Copy manually (CTRL+C)")
+
+    st.divider()
 
     if not st.session_state.history:
         st.info("No history yet. Click Generate to start ✅")
     else:
         for i, item in enumerate(st.session_state.history[:15], start=1):
-            title = f"{i}. [{item.get('created_at')}] {item.get('template_id')} | cached={item.get('cached')} | tokens={item.get('total_tokens')}"
+            title = (
+                f"{i}. [{item.get('created_at')}] "
+                f"{item.get('template_id')} | cached={item.get('cached')} | tokens={item.get('total_tokens')}"
+            )
             with st.expander(title, expanded=False):
                 st.write(f"**Request ID:** `{item.get('request_id')}`")
                 st.write(f"**Time:** {item.get('time_ms')} ms")
+
                 st.write("**Input**")
                 st.code(item.get("input", ""), language="text")
+
+                st.write("**Parameters**")
+                st.json(item.get("parameters", {}))
+
                 st.write("**Output**")
                 st.write(item.get("output", ""))
 

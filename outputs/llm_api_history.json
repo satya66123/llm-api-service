@@ -1,0 +1,32 @@
+[
+  {
+    "template_id": "basic_chat_v1",
+    "input": "Give 3 points why FastAPI is popular",
+    "parameters": {
+      "tone": "neutral"
+    },
+    "cached": true,
+    "input_tokens": 37,
+    "output_tokens": 163,
+    "total_tokens": 200,
+    "output": "Here are three reasons why FastAPI is popular:\n\n1. **Performance**: FastAPI is built on Starlette and Pydantic, which allows it to deliver high performance comparable to Node.js and Go. This efficiency is particularly beneficial for applications requiring quick response times and the handling of a large number of concurrent connections.\n\n2. **Automatic Documentation**: FastAPI automatically generates interactive API documentation (using Swagger UI and ReDoc) based on the code and type hints. This feature simplifies testing and understanding the API for both developers and users.\n\n3. **Ease of Use**: The framework promotes a developer-friendly experience with features like concise syntax, type checking, and integration with Python's type hints. This makes it easier for developers to build and maintain APIs, leading to increased productivity and reduced potential for errors.",
+    "time_ms": 33,
+    "request_id": "08c54c9a-8f69-4658-8453-72246b97790a",
+    "created_at": "2026-01-11 15:04:44"
+  },
+  {
+    "template_id": "basic_chat_v1",
+    "input": "Give 3 points why FastAPI is popular",
+    "parameters": {
+      "tone": "neutral"
+    },
+    "cached": false,
+    "input_tokens": 37,
+    "output_tokens": 163,
+    "total_tokens": 200,
+    "output": "Here are three reasons why FastAPI is popular:\n\n1. **Performance**: FastAPI is built on Starlette and Pydantic, which allows it to deliver high performance comparable to Node.js and Go. This efficiency is particularly beneficial for applications requiring quick response times and the handling of a large number of concurrent connections.\n\n2. **Automatic Documentation**: FastAPI automatically generates interactive API documentation (using Swagger UI and ReDoc) based on the code and type hints. This feature simplifies testing and understanding the API for both developers and users.\n\n3. **Ease of Use**: The framework promotes a developer-friendly experience with features like concise syntax, type checking, and integration with Python's type hints. This makes it easier for developers to build and maintain APIs, leading to increased productivity and reduced potential for errors.",
+    "time_ms": 4489,
+    "request_id": "ccad9b04-7ffb-4a9c-af6b-99cfe0de3a59",
+    "created_at": "2026-01-11 15:04:42"
+  }
+]

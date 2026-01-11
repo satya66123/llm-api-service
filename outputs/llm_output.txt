@@ -1,0 +1,7 @@
+Here are three reasons why FastAPI is popular:
+
+1. **Performance**: FastAPI is built on Starlette and Pydantic, which allows it to deliver high performance comparable to Node.js and Go. This efficiency is particularly beneficial for applications requiring quick response times and the handling of a large number of concurrent connections.
+
+2. **Automatic Documentation**: FastAPI automatically generates interactive API documentation (using Swagger UI and ReDoc) based on the code and type hints. This feature simplifies testing and understanding the API for both developers and users.
+
+3. **Ease of Use**: The framework promotes a developer-friendly experience with features like concise syntax, type checking, and integration with Python's type hints. This makes it easier for developers to build and maintain APIs, leading to increased productivity and reduced potential for errors.
