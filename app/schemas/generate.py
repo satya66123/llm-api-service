@@ -12,6 +12,11 @@ class GenerateResponse(BaseModel):
     request_id: str
     template_id: str
     cached: bool
+
+    input_tokens: int
+    output_tokens: int
+    total_tokens: int
+
     output: str
     system_prompt: str
     user_prompt: str
