@@ -13,3 +13,5 @@ class GenerateResponse(BaseModel):
     template_id: str
     cached: bool
     output: str
+    system_prompt: str
+    user_prompt: str

@@ -1,6 +1,7 @@
 import uuid
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.schemas.generate import GenerateRequest, GenerateResponse
+from app.services.prompt_templates import render_prompt
 
 router = APIRouter(tags=["generate"])
 
@@ -21,10 +22,19 @@ def generate_info():
 def generate(req: GenerateRequest):
     request_id = str(uuid.uuid4())
 
-    # For now return a dummy output (LLM integration comes in next tasks)
-    return GenerateResponse(
-        request_id=request_id,
-        template_id=req.template_id,
-        cached=False,
-        output=f"Received input: {req.input[:50]}",
-    )
+    try:
+        # Render template prompts (system + user)
+        prompts = render_prompt(req.template_id, req.input, req.parameters)
+
+        return GenerateResponse(
+            request_id=request_id,
+            template_id=req.template_id,
+            cached=False,
+            output="Prompt template rendered successfully (LLM call next task).",
+            system_prompt=prompts["system"],
+            user_prompt=prompts["user"],
+        )
+
+    except ValueError as ve:
+        # Unknown template id, bad input etc.
+        raise HTTPException(status_code=400, detail=str(ve))
