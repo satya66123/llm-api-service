@@ -28,7 +28,7 @@ def generate(req: GenerateRequest):
         # Render prompt template
         prompts = render_prompt(req.template_id, req.input, req.parameters)
 
-        # Build cache key
+        # Cache key
         cache_key = cache.make_key(req.template_id, req.input, req.parameters)
 
         # Cache hit
@@ -74,10 +74,19 @@ def generate(req: GenerateRequest):
         )
 
     except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "BadRequest", "details": str(ve)},
+        )
 
     except RuntimeError as re:
-        raise HTTPException(status_code=502, detail=str(re))
+        raise HTTPException(
+            status_code=502,
+            detail={"error": "LLMProviderError", "details": str(re)},
+        )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail={"error": "InternalServerError", "details": str(e)},
+        )
