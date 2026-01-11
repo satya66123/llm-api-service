@@ -63,7 +63,7 @@ Production-style **LLM API backend service** built using **FastAPI + OpenAI Resp
 
 ## 📂 Project Structure
 
-```bash
+
 llm-api-service/
 │
 ├── app/
